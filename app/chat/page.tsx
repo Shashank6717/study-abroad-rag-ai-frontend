@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import Sidebar from "@/app/components/SideBar";
 import { Home, Loader2, MessageSquarePlus, Send, Mic, MicOff } from "lucide-react";
 
-export default function ChatIndexPage() {
+function ChatContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const q = searchParams.get("q");
@@ -167,5 +167,13 @@ export default function ChatIndexPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ChatIndexPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center bg-[#0b0b0b] text-white"><Loader2 className="w-10 h-10 animate-spin text-primary" /></div>}>
+      <ChatContent />
+    </Suspense>
   );
 }
