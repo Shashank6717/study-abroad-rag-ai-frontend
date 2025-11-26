@@ -36,14 +36,25 @@ return (
       <div className="container px-4 md:px-6 mx-auto relative z-10">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-3xl font-bold text-white">
-            <BlurText
+       <BlurText
   text="Why use this Assistant?"
   delay={150}
   animateBy="words"
   direction="top"
+  animationFrom={{
+    opacity: 0,
+    filter: "blur(10px)",
+    y: -10,
+  }}
+  animationTo={{
+    opacity: 1,
+    filter: "blur(0px)",
+    y: 0,
+  }}
   onAnimationComplete={handleAnimationComplete}
   className="text-5xl justify-center"
 />
+
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg">
             Navigating higher studies can be overwhelming. We make it simple, accurate, and reliable.
