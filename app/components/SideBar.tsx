@@ -3,10 +3,26 @@
 import { useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import ChatRow from "./ChatRow";
-import { MessageSquarePlus, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { MessageSquarePlus, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export default function Sidebar({ chats, currentChatId, setChats, loading = false }: any) {
+interface SidebarProps {
+  chats: any[];
+  currentChatId: string | null;
+  setChats: (chats: any[]) => void;
+  loading?: boolean;
+  mobileOpen?: boolean;
+  setMobileOpen?: (open: boolean) => void;
+}
+
+export default function Sidebar({ 
+  chats, 
+  currentChatId, 
+  setChats, 
+  loading = false,
+  mobileOpen = false,
+  setMobileOpen
+}: SidebarProps) {
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [userEmail, setUserEmail] = useState("User Account");
@@ -28,7 +44,7 @@ export default function Sidebar({ chats, currentChatId, setChats, loading = fals
 
   if (isCollapsed) {
     return (
-        <div className="w-16 bg-[#0b0b0b] border-r border-white/5 flex flex-col items-center py-4 space-y-4 transition-all duration-300">
+        <div className="hidden md:flex w-16 bg-[#0b0b0b] border-r border-white/5 flex-col items-center py-4 space-y-4 transition-all duration-300">
             <button 
                 onClick={() => setIsCollapsed(false)}
                 className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
@@ -46,22 +62,49 @@ export default function Sidebar({ chats, currentChatId, setChats, loading = fals
   }
 
   return (
-    <div className="w-64 bg-[#0b0b0b] flex flex-col border-r border-white/5 transition-all duration-300">
-      <div className="p-4 flex items-center justify-between">
-        <button
-            onClick={createChat}
-            className="flex-1 flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-xl transition-all border border-white/5 hover:border-white/10 text-sm font-medium"
-        >
-            <MessageSquarePlus size={16} />
-            <span>New Chat</span>
-        </button>
-        <button 
-            onClick={() => setIsCollapsed(true)}
-            className="ml-2 p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-        >
-            <PanelLeftClose size={18} />
-        </button>
-      </div>
+    <>
+      {/* Mobile Backdrop */}
+      {mobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setMobileOpen?.(false)}
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <div className={`
+        fixed md:static inset-y-0 left-0 z-50
+        w-64 bg-[#0b0b0b] flex flex-col border-r border-white/5 transition-transform duration-300
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+      `}>
+        <div className="p-4 flex items-center justify-between">
+          <button
+              onClick={() => {
+                createChat();
+                setMobileOpen?.(false);
+              }}
+              className="flex-1 flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-xl transition-all border border-white/5 hover:border-white/10 text-sm font-medium"
+          >
+              <MessageSquarePlus size={16} />
+              <span>New Chat</span>
+          </button>
+          
+          {/* Desktop Collapse Button */}
+          <button 
+              onClick={() => setIsCollapsed(true)}
+              className="hidden md:block ml-2 p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+          >
+              <PanelLeftClose size={18} />
+          </button>
+
+          {/* Mobile Close Button */}
+          <button 
+              onClick={() => setMobileOpen?.(false)}
+              className="md:hidden ml-2 p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+          >
+              <X size={18} />
+          </button>
+        </div>
 
       <div className="flex-1 overflow-y-auto px-2 space-y-1 py-2 custom-scrollbar">
         <div className="px-2 pb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -78,7 +121,10 @@ export default function Sidebar({ chats, currentChatId, setChats, loading = fals
             <ChatRow
                 key={chat.id}
                 chat={chat}
-                onClick={() => router.push(`/chat/${chat.id}`)}
+                onClick={() => {
+                  router.push(`/chat/${chat.id}`);
+                  setMobileOpen?.(false);
+                }}
                 refreshChats={async () => {
                 const res = await apiRequest("/api/chat/list");
                 setChats(res.chats || []);
@@ -98,6 +144,7 @@ export default function Sidebar({ chats, currentChatId, setChats, loading = fals
             </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

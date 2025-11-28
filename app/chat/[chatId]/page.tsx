@@ -5,7 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import Sidebar from "@/app/components/SideBar";
 import ChatWindow from "@/app/components/ChatWindow";
-import { Loader2, Send, Mic, MicOff } from "lucide-react";
+import { Loader2, Send, Mic, MicOff, Menu } from "lucide-react";
 import { Home } from "lucide-react";
 
 export default function ChatPage() {
@@ -15,6 +15,7 @@ export default function ChatPage() {
   const autoSend = searchParams.get("autoSend");
   const hasAutoSent = useRef(false);
   const [isListening, setIsListening] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Handle chatId properly - it could be string, string[], or undefined
   const chatId = Array.isArray(params.chatId)
@@ -187,10 +188,26 @@ export default function ChatPage() {
   return (
     <div className="flex h-screen bg-[#0b0b0b] text-white">
       {/* Left Sidebar */}
-      <Sidebar chats={chats} currentChatId={chatId} setChats={setChats} loading={chatsLoading} />
+      <Sidebar 
+        chats={chats} 
+        currentChatId={chatId} 
+        setChats={setChats} 
+        loading={chatsLoading}
+        mobileOpen={mobileMenuOpen}
+        setMobileOpen={setMobileMenuOpen}
+      />
 
       {/* Chat Window */}
       <div className="flex-1 flex flex-col bg-transparent relative">
+        {/* Mobile Menu Button */}
+        <div className="absolute top-4 left-4 md:hidden z-10">
+            <button 
+                onClick={() => setMobileMenuOpen(true)}
+                className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+            >
+                <Menu size={20} />
+            </button>
+        </div>
         <div className="absolute top-4 right-4 z-10">
             <button 
                 onClick={() => router.push("/")}

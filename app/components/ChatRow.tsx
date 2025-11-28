@@ -66,7 +66,7 @@ export default function ChatRow({ chat, onClick, refreshChats }: ChatRowProps) {
       </div>
 
       {/* Right Side Icons */}
-      <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-2 ml-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
         {!editing ? (
           <>
             <button

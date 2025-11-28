@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import Sidebar from "@/app/components/SideBar";
-import { Home, Loader2, MessageSquarePlus, Send, Mic, MicOff } from "lucide-react";
+import { Home, Loader2, MessageSquarePlus, Send, Mic, MicOff, Menu } from "lucide-react";
 
 function ChatContent() {
   const router = useRouter();
@@ -15,6 +15,7 @@ function ChatContent() {
   const [creating, setCreating] = useState(false);
   const [question, setQuestion] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const startListening = () => {
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
@@ -104,9 +105,25 @@ function ChatContent() {
 
   return (
     <div className="flex h-screen bg-[#0b0b0b] text-white">
-      <Sidebar chats={chats} currentChatId={null} setChats={setChats} loading={chatsLoading} />
+      <Sidebar 
+        chats={chats} 
+        currentChatId={null} 
+        setChats={setChats} 
+        loading={chatsLoading}
+        mobileOpen={mobileMenuOpen}
+        setMobileOpen={setMobileMenuOpen}
+      />
       
-      <div className="flex-1 flex flex-col items-center justify-center p-4 text-center space-y-6">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 text-center space-y-6 relative">
+        {/* Mobile Menu Button */}
+        <div className="absolute top-4 left-4 md:hidden z-10">
+            <button 
+                onClick={() => setMobileMenuOpen(true)}
+                className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+            >
+                <Menu size={20} />
+            </button>
+        </div>
 
   <div className="absolute top-4 right-4 py-4 p-9
   " onClick={() => router.push("/")}>
